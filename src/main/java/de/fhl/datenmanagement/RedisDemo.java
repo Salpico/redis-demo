@@ -1,6 +1,11 @@
 package de.fhl.datenmanagement;
 
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An example class to show, how to use
@@ -11,11 +16,22 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisDemo {
 
+    /**
+     * Main entry point.
+     *
+     * @param args the program's arguments
+     * @throws InterruptedException -
+     */
     public static void main(String[] args) throws InterruptedException {
         singleRedisServer();
         //clusterRedisInstances();
     }
 
+    /**
+     * Single redis server demo.
+     *
+     * @throws InterruptedException -
+     */
     private static void singleRedisServer() throws InterruptedException {
         /*
             Prerequisites:
@@ -56,8 +72,41 @@ public class RedisDemo {
         System.out.printf("Value was removed: %s\n", datenmanagementExists);
     }
 
+    /**
+     * Redis cluster demo.
+     */
     private static void clusterRedisInstances() {
+        /*
+            Prerequisites:
+         */
+        // CMD: In Git Bash
+        // `./redis-cluster.sh`
 
+        // Create set of hostnames and ports.
+        Set<HostAndPort> jedisClusterNodes = new HashSet<>();
+
+        // Add one cluster node.
+        jedisClusterNodes.add(new HostAndPort("redis-1", 6379));
+
+        // Create cluster.
+        JedisCluster jc = new JedisCluster(jedisClusterNodes);
+
+        // Set key "datenmanangement" to value "aufgabe-6".
+        jc.set("datenmanagement", "aufgabe-6");
+
+        // Get value of key via Jedis.
+        String datenmanagement = jc.get("datenmanagement");
+        System.out.printf("Value is: %s\n", datenmanagement);
+
+        /*
+            Later:
+         */
+        // CMD: Export Java project as .jar file.
+        // `mvn package`
+
+        // CMD: Start jar file in Docker container, which has access to the redis cluster network.
+        // `cd target`
+        // `docker run -v ${PWD}/redis-demo-1.0.0-SNAPSHOT.jar:/opt/redis-demo.jar -i --rm --net redis_cluster openjdk:8-jre-slim sh -c "java -jar /opt/redis-demo.jar"`
     }
 
 }
