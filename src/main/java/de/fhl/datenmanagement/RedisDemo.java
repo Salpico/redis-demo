@@ -80,6 +80,7 @@ public class RedisDemo {
             Prerequisites:
          */
         // CMD: In Git Bash
+        // `docker network create redis_cluster`
         // `./redis-cluster.sh`
 
         // Create set of hostnames and ports.
